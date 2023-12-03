@@ -5,7 +5,7 @@ end
 
 vim.diagnostic.config({
   virtual_text = true,
-  underline = true,
+  underline = false,
   signs = false,
   severity_sort = true,
   update_in_insert = true,
@@ -19,17 +19,17 @@ vim.diagnostic.config({
   },
 })
 
-
 tld.init(vim.diagnostic.config())
 
-vim.keymap.set("n", "<leader>ltu", function() tld.toggle_underline() end, { desc = "Toggle Underline", noremap = true, remap = false  })
-vim.keymap.set("n", "<leader>lts", function() tld.toggle_signs() end, { desc = "Toggle Signs", noremap = true, remap = false  })
-vim.keymap.set("n", "<leader>ltt", function() tld.toggle_virtual_text() end, { desc = "Toggle Virtual Text", noremap = true, remap = false  })
-vim.keymap.set("n", "<leader>lti", function() tld.toggle_update_in_insert() end, { desc = "Toggle Update in insert", noremap = true, remap = false  })
-vim.keymap.set("n", "<leader>lta", function() tld.toggle_diagnostics() end, { desc = "Toggle All", noremap = true, remap = false  })
-vim.keymap.set("n", "<leader>ltR", function() tld.turn_on_diagnostics_default() end, { desc = "Reset to default", noremap = true, remap = false  })
-vim.keymap.set("n", "<leader>ltf", function() tld.turn_off_diagnostics() end, { desc = "Off", noremap = true, remap = false  })
-vim.keymap.set("n", "<leader>ltn", function() tld.turn_on_diagnostics() end, { desc = "On", noremap = true, remap = false  })
+local nmap = require('user.utils').nnoremap
+nmap("<leader>ltu", tld.toggle_underline, "Toggle Underline")
+nmap("<leader>lts", tld.toggle_signs, "Toggle Signs")
+nmap("<leader>ltt", tld.toggle_virtual_text, "Toggle Virtual Text")
+nmap("<leader>lti", tld.toggle_update_in_insert, "Toggle Update in insert")
+nmap("<leader>lta", tld.toggle_diagnostics, "Toggle All")
+nmap("<leader>ltR", tld.turn_on_diagnostics_default, "Reset to default")
+nmap("<leader>ltf", tld.turn_off_diagnostics, "Off")
+nmap("<leader>ltn", tld.turn_on_diagnostics, "On")
 
 -- function diagnostic_toggle(global)
 --   local vars, bufnr, cmd

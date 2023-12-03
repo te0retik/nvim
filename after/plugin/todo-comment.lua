@@ -10,7 +10,7 @@ todo.setup({
   highlight = {
      -- "fg", "bg", "wide", "wide_bg", "wide_fg" or empty. (wide and wide_bg is the same as bg, but will also highlight surrounding characters)
     keyword = "bg",
-    pattern = ".*(KEYWORDS)[:?( ].*",
+    pattern = "\\W(KEYWORDS)[:?( ].*",
     comments_only = true,
     multiline = false,
   },
