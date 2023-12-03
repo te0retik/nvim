@@ -1,0 +1,30 @@
+
+-- TODO list 
+
+*   https://github.com/stevearc/dressing.nvim
+*   https://github.com/ThePrimeagen/refactoring.nvim#config-refactoring
+* - https://github.com/nvim-telescope/telescope-ui-select.nvim
+* v config https://github.com/windwp/nvim-autopairs for nvim-cmp
+* v lazy load color schemes
+* ? https://github.com/utilyre/barbecue.nvim
+
+*   telescope.lsp_references path_display tail
+*   telescope.lsp_references filter out duplicates
+*   golangci-lint
+*   go debugger
+* x folke/neoconf.nvim
+* v leader-c   - comment, leader-A - comment statement
+*   go to next line after comment
+* v format code comand
+*   keymap to surround region - tpope/vim-surround 
+* v windwp/nvim-autopairs
+* v leader-w   - save buffer (:w)
+* ? keymap to movement in I-mode
+*   telescope preview scrolling
+*   telescope clonse buffer https://www.reddit.com/r/neovim/comments/qspemc/close_buffers_with_telescope/
+*   telescope close buffer from buffers picker
+* v capslock as ESC
+* v nvim-tree - easy expand node key
+* v LSP - preview (popup) type definition, write access, declaration
+* v <leader>lt - diagnostics (troubles) toggling signs, virtual text and other
+* v complete snippets key
