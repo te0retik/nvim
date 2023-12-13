@@ -6,7 +6,7 @@ end
 
 local neodev_ok, neodev = pcall(require, "neodev")
 if neodev_ok then
-  neodev.setup({})  -- Setup neovim lua configuration
+  neodev.setup({}) -- Setup neovim lua configuration
 else
   require('user.utils').info("skipped neodev")
   print("skipped neodev")
@@ -84,10 +84,6 @@ local on_attach = function(client, bufnr)
     vim.keymap.set(mmode, keys, func, { buffer = bufnr, desc = desc })
   end
 
-  -- vim.api.nvim_buf_create_user_command(bufnr, 'Format', function()
-  -- vim.lsp.buf.format()
-  -- end, { desc = 'Format current buffer' })
-
   -- highlight word under cursor
   -- if client.supports_method "textDocument/documentHighlight" then
   --   vim.api.nvim_create_augroup("lsp_document_highlight", {clear = false})
@@ -112,6 +108,22 @@ local on_attach = function(client, bufnr)
   --   return
   -- end
   -- illuminate.on_attach(client)
+
+  local hover_close = function(base_win_id)
+    -- https://vi.stackexchange.com/questions/37225/how-do-i-close-a-hovered-window-with-lsp-information-escape-does-not-work
+    local windows = vim.api.nvim_tabpage_list_wins(0)
+    for _, win_id in ipairs(windows) do
+      if win_id ~= base_win_id then
+        local win_cfg = vim.api.nvim_win_get_config(win_id)
+        if win_cfg.relative == "win" and win_cfg.win == base_win_id then
+          vim.api.nvim_win_close(win_id, {})
+          break
+        end
+      end
+    end
+  end
+
+  map('q', function() hover_close(vim.api.nvim_get_current_win()) end, "close hover")
 end
 
 -- mason-lspconfig requires that these setup functions are called in this order
@@ -142,10 +154,10 @@ local servers = {
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
-mason_lspconfig.setup {
+mason_lspconfig.setup({
   ensure_installed = vim.tbl_keys(servers),
-}
-mason_lspconfig.setup_handlers {
+})
+mason_lspconfig.setup_handlers({
   function(server_name)
     lspconfig[server_name].setup {
       capabilities = capabilities,
@@ -154,4 +166,4 @@ mason_lspconfig.setup_handlers {
       filetypes = (servers[server_name] or {}).filetypes,
     }
   end,
-}
+})

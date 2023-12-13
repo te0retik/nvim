@@ -10,8 +10,8 @@ comment.setup({
     extra = false,
   },
   -- https://github.com/numToStr/Comment.nvim/blob/master/lua/Comment/init.lua
-  toggler = nil,  -- used if mappings.basic
-  opleader = nil, -- used if mappings.basic
+  -- toggler = nil,  -- used if mappings.basic
+  -- opleader = nil, -- used if mappings.basic
 })
 
 vim.keymap.set("n", "<leader>c", "<Plug>(comment_toggle_linewise_current)", { desc = "Toggle comment" })

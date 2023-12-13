@@ -4,16 +4,30 @@ if not ok then
   return
 end
 
+local env_filename = ""
 
 rest.setup({
   result = {
     show_curl_command = true,
-    show_statistics = true,
+    -- show_statistics = true,
   }
 })
 
+local print_env_filename_and_preview = function()
+  rest.run(true)
+  -- print("rest env = '" .. env_filename .. "'")
+  vim.api.nvim_echo(
+    {
+      { "[rest.nvim] environment file: ", "Comment" },
+      { env_filename }
+    },
+    true,
+    {}
+  )
+end
+
 vim.keymap.set("n", "<leader>tt", function() rest.run() end, { desc = "Execute request" })
-vim.keymap.set("n", "<leader>tp", function() rest.run(true) end, { desc = "Preview request" })
+vim.keymap.set("n", "<leader>tp", print_env_filename_and_preview, { desc = "Preview request" })
 
 local rest_curl = require("rest-nvim.curl")
 local utils = require("rest-nvim.utils")
@@ -21,14 +35,6 @@ local utils = require("rest-nvim.utils")
 vim.api.nvim_create_autocmd("User", {
   pattern = "RestStopRequest",
   callback = function(event)
-    -- receives a table argument with these keys:
-    -- • id: (number) autocommand id
-    -- • event: (string) name of the triggered event |autocmd-events|
-    -- • group: (number|nil) autocommand group id, if any
-    -- • match: (string) expanded value of |<amatch>|
-    -- • buf: (number) expanded value of |<abuf>|
-    -- • file: (string) expanded value of |<afile>|
-    -- • data: (any) arbitrary data passed from |nvim_exec_autocmds()|
     local curl_response_bufnr = rest_curl.get_or_create_buf()
     local res_filename = "./last-respose.json"
     -- local json = vim.fn.json_encode()
@@ -80,6 +86,8 @@ if telescope_ok then
 
           local selection = action_state.get_selected_entry()
           local path = selection[1]
+
+          env_filename = path
 
           rest_config.set({ env_file = path })
 

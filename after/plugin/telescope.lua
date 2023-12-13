@@ -27,7 +27,7 @@ telescope.setup({
         -- ["<C-y>"] = function(bufnr) slow_scroll(bufnr, -1) end,
       },
       i = {
-         ["<c-b>"] = "delete_buffer",
+        ["<c-b>"] = "delete_buffer",
       },
     },
   },
@@ -56,29 +56,43 @@ pcall(telescope.load_extension, 'fzf')
 -- See `:help telescope.builtin`
 local t = require("telescope.builtin")
 
-vim.keymap.set('n', '<leader>fb', function()
+local colorscheme_fuzzy_find = function() t.colorscheme({ enable_preview = true }); end
+local current_buffer_fuzzy_find = function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   t.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
-    previewer = false,
+    previewer = true,
   })
-end, { desc = "buffer" })
+end
 
-vim.keymap.set('n', "<leader><space>", t.buffers, { desc = 'buffers list' })
-vim.keymap.set('n', "<leader>ff", t.find_files, { desc = 'Files' })
-vim.keymap.set('n', "<leader>fv", t.git_files, { desc = 'Git files' })
-vim.keymap.set('n', "<leader>fg", t.live_grep, { desc = 'grep' })
-vim.keymap.set('n', "<leader>fw", t.grep_string, { desc = 'Word under cursor' })
-vim.keymap.set('n', "<leader>fd", t.diagnostics, { desc = 'Diagnostics' })
-vim.keymap.set('n', "<leader>fs", t.registers, { desc = 'registers' })
-vim.keymap.set('i', "<C-r>", t.registers, { desc = 'registers' })
-vim.keymap.set('n', "<leader>fr", t.resume, { desc = 'Resume search' })
-vim.keymap.set('n', "<leader>fH", t.help_tags, { desc = 'help tags' })
-vim.keymap.set('n', "<leader>fM", t.man_pages, { desc = 'man pages' })
-vim.keymap.set('n', "<leader>fK", t.keymaps, { desc = 'keymaps' })
-vim.keymap.set('n', "<leader>fo", t.oldfiles, { desc = 'Recently Opened Files' })
-vim.keymap.set('n', "<leader>fC", t.commands, { desc = 'commands' })
-vim.keymap.set('n', "<leader>fL", t.highlights, { desc = 'highlights' })
+local nmap = require('user.utils').nnoremap
+nmap("<leader><space>", t.buffers, 'buffers list')
+nmap('<leader>fb', current_buffer_fuzzy_find, "buffer")
+nmap("<leader>ff", t.find_files, 'Files')
+nmap("<leader>fv", t.git_files, 'Git files')
+nmap("<leader>fg", t.live_grep, 'grep')
+nmap("<leader>fw", t.grep_string, 'Word under cursor')
+nmap("<leader>fd", t.diagnostics, 'Diagnostics')
+nmap("<leader>fs", t.registers, 'registers')
+nmap("<leader>fr", t.resume, 'Resume search')
+nmap("<leader>fH", t.help_tags, 'help tags')
+nmap("<leader>fM", t.man_pages, 'man pages')
+nmap("<leader>fK", t.keymaps, 'keymaps')
+nmap("<leader>fo", t.oldfiles, 'Recently Opened Files')
+nmap("<leader>fC", t.commands, 'commands')
+nmap("<leader>fL", t.highlights, 'highlights')
+nmap("<leader>.c", colorscheme_fuzzy_find, "Colorscheme with preview")
 
-vim.keymap.set('n', "<leader>.c", function() t.colorscheme({ enable_preview = true }); end,
-  { desc = "Colorscheme with preview" })
+local map = require('user.utils').noremap
+map("i", "<C-r>", t.registers, 'registers')
+
+-- local utils = require('user.utils')
+-- map('v', '<space>fb', function()
+--   local text = utils.get_selected_text()
+--   t.current_buffer_fuzzy_find({ default_text = text })
+-- end, "Search selected text in current buffer")
+--
+-- map('v', '<space>fg', function()
+--   local text = utils.selected_text()
+--   t.live_grep({ default_text = text })
+-- end, 'Grep selected text')

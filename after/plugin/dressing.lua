@@ -7,29 +7,16 @@ end
 
 dressing.setup({
   input = {
-    -- Set to false to disable the vim.ui.input implementation
-    enabled = true,
-
-    -- Default prompt string
-    default_prompt = "Input:",
-
-    -- Can be 'left', 'right', or 'center'
-    title_pos = "left",
-
-    -- When true, <Esc> will close the modal
-    insert_only = true,
-
-    -- When true, input will start in insert mode.
-    start_in_insert = true,
-
-    -- These are passed to nvim_open_win
-    border = "rounded",
-    -- 'editor' and 'win' will default to being centered
-    relative = "cursor",
-
-    -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
-    prefer_width = 40,
+    enabled = true,         -- Set to false to disable the vim.ui.input implementation
+    default_prompt = ">",   -- Default prompt string
+    title_pos = "left",     -- Can be 'left', 'right', or 'center'
+    insert_only = false,    -- When true, <Esc> will close the modal
+    start_in_insert = true, -- When true, input will start in insert mode.
+    border = "rounded",     -- These are passed to nvim_open_win
+    relative = "cursor",    -- 'editor' and 'win' will default to being centered
+    prefer_width = 40,      -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
     width = nil,
+
     -- min_width and max_width can be a list of mixed types.
     -- min_width = {20, 0.2} means "the greater of 20 columns or 20% of total"
     max_width = { 140, 0.9 },
@@ -37,17 +24,13 @@ dressing.setup({
 
     buf_options = {},
     win_options = {
-      -- Disable line wrapping
-      wrap = false,
-      -- Indicator for when text exceeds window
-      list = true,
+      wrap = false,      -- Disable line wrapping
+      list = true,       -- Indicator for when text exceeds window
       listchars = "precedes:…,extends:…",
-      -- Increase this for more context when text scrolls off the window
-      sidescrolloff = 0,
+      sidescrolloff = 0, -- Increase this for more context when text scrolls off the window
     },
 
-    -- Set to `false` to disable
-    mappings = {
+    mappings = { -- Set to `false` to disable
       n = {
         ["<Esc>"] = "Close",
         ["<CR>"] = "Confirm",
@@ -66,42 +49,33 @@ dressing.setup({
       return conf
     end,
 
-    -- see :help dressing_get_config
-    get_config = nil,
+    get_config = nil, -- see :help dressing_get_config
   },
   select = {
-    -- Set to false to disable the vim.ui.select implementation
-    enabled = true,
-
-    -- Priority list of preferred vim.select implementations
-    backend = { "telescope", "fzf_lua", "fzf", "builtin", "nui" },
-
-    -- Trim trailing `:` from prompt
-    trim_prompt = true,
+    enabled = true,                                                -- Set to false to disable the vim.ui.select implementation
+    backend = { "telescope", "fzf_lua", "fzf", "builtin", "nui" }, -- Priority list of preferred vim.select implementations
+    trim_prompt = true,                                            -- Trim trailing `:` from prompt
 
     -- Options for telescope selector
     -- These are passed into the telescope picker directly. Can be used like:
     -- telescope = require('telescope.themes').get_ivy({...})
     telescope = nil,
 
-    -- Options for fzf selector
-    fzf = {
+    fzf = { -- Options for fzf selector
       window = {
         width = 0.5,
         height = 0.4,
       },
     },
 
-    -- Options for fzf-lua
-    fzf_lua = {
+    fzf_lua = { -- Options for fzf-lua
       -- winopts = {
       --   height = 0.5,
       --   width = 0.5,
       -- },
     },
 
-    -- Options for nui Menu
-    nui = {
+    nui = { -- Options for nui Menu
       position = "50%",
       size = nil,
       relative = "editor",
@@ -121,14 +95,10 @@ dressing.setup({
       min_height = 10,
     },
 
-    -- Options for built-in selector
-    builtin = {
-      -- Display numbers for options and set up keymaps
-      show_numbers = true,
-      -- These are passed to nvim_open_win
-      border = "rounded",
-      -- 'editor' and 'win' will default to being centered
-      relative = "editor",
+    builtin = {            -- Options for built-in selector
+      show_numbers = true, -- Display numbers for options and set up keymaps
+      border = "rounded",  -- These are passed to nvim_open_win
+      relative = "editor", -- 'editor' and 'win' will default to being centered
 
       buf_options = {},
       win_options = {
@@ -146,8 +116,7 @@ dressing.setup({
       max_height = 0.9,
       min_height = { 10, 0.2 },
 
-      -- Set to `false` to disable
-      mappings = {
+      mappings = { -- Set to `false` to disable
         ["<Esc>"] = "Close",
         ["<C-c>"] = "Close",
         ["<CR>"] = "Confirm",
@@ -160,10 +129,7 @@ dressing.setup({
       end,
     },
 
-    -- Used to override format_item. See :help dressing-format
-    format_item_override = {},
-
-    -- see :help dressing_get_config
-    get_config = nil,
+    format_item_override = {}, -- Used to override format_item. See :help dressing-format
+    get_config = nil,          -- see :help dressing_get_config
   },
 })
