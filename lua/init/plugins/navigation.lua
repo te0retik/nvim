@@ -1,6 +1,6 @@
 ------------------------------- NAVIGATION ----------------------------------
 return {
-  { "folke/zen-mode.nvim", event = "VeryLazy"  },
+  { "folke/zen-mode.nvim",    event = "VeryLazy" },
   -- "preservim/tagbar",
   -- "akinsho/bufferline.nvim",
   -- "nacro90/numb.nvim", -- Peeking the buffer while entering command :{number}
@@ -45,6 +45,7 @@ return {
     dependencies = {
       "nvim-tree/nvim-web-devicons",
       "antosha417/nvim-lsp-file-operations",
+      { "JMarkin/nvim-tree.lua-float-preview", lazy = true },
     },
     --config = function()
     --  require("nvim-tree").setup {}
@@ -59,7 +60,8 @@ return {
   },
 
   {
-    "nvim-telescope/telescope.nvim", event = "VeryLazy" ,
+    "nvim-telescope/telescope.nvim",
+    event = "VeryLazy",
     branch = '0.1.x',
     dependencies = {
       "nvim-lua/plenary.nvim",

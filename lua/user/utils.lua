@@ -1,8 +1,5 @@
 local utils = {}
 
-function utils.nnoremap(lhs, rhs, desc)
-  local opts = { noremap = true, remap = false, silent = true, desc = desc }
-  vim.keymap.set('n', lhs, rhs, opts)
 function utils.nnoremap(lhs, rhs, desc, opts)
   utils.noremap('n', lhs, rhs, desc, opts)
 end

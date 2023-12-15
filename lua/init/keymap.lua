@@ -31,6 +31,7 @@ nmap("zo", "za", "Toggle fold under cursor")
 -- nmap("<M-Left>", "<cmd>vertical resize -1<cr>", "Horizontally Resize -1")
 -- nmap("<M-Up>", "<cmd>resize +1<cr>", "Vertical Resize +1")
 -- nmap("<M-Down>", "<cmd>resize -1<cr>", "Vertical Resize -1")
+-- TODO keymap tab movement
 nmap("<M-l>", "<cmd>vertical resize +1<cr>", "Horizontally Resize +1")
 nmap("<M-h>", "<cmd>vertical resize -1<cr>", "Horizontally Resize -1")
 nmap("<M-k>", "<cmd>resize +1<cr>", "Vertical Resize +1")
