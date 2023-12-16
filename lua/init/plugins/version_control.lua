@@ -15,6 +15,8 @@ return {
     lazy = true,
   },
 
+  { "petertriho/cmp-git", requires = "nvim-lua/plenary.nvim" },
+
   --{
   --  "ruifm/gitlinker.nvim",
   --  dependencies = "nvim-lua/plenary.nvim",

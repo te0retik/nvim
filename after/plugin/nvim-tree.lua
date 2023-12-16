@@ -7,10 +7,11 @@ end
 local PlenaryPath = require("plenary.path")
 local float_preview_ok, float_preview = pcall(require, "float-preview")
 
-local nnoremap = require("user.utils").nnoremap
-
 local nvim_tree_api = require("nvim-tree.api")
 local nvim_tree_core = require("nvim-tree.core")
+local nvim_tree_view = require("nvim-tree.view")
+
+local nnoremap = require("user.utils").nnoremap
 
 local TelescopeRoutines = {}
 local telescope_ok, telescope = pcall(require, "telescope.builtin")
@@ -86,18 +87,30 @@ if telescope_ok then
   nnoremap("<leader>fD", TelescopeRoutines.find_directory_and_focus, "Find directory and NvimTree Focus")
 end
 
-local nvimTreeFocusOrToggle = function() -- https://github.com/nvim-tree/nvim-tree.lua/wiki/Recipes
+local function nvimTreeFocusOrToggle(float) -- https://github.com/nvim-tree/nvim-tree.lua/wiki/Recipes
+  local float_enabled = nvim_tree.config.view.float.enable
+  if float == nil then
+    float = false
+  end
+  nvim_tree.config.view.float.enable = float
+
+  if nvim_tree_view.is_visible() and float_enabled ~= float then -- close tree to open after in `float` mode
+    nvim_tree_api.tree.close()
+  end
+
   local currentBuf = vim.api.nvim_get_current_buf()
   local currentBufFt = vim.api.nvim_get_option_value("filetype", { buf = currentBuf })
-  if currentBufFt == "NvimTree" then
+  local tree_is_active = currentBufFt == "NvimTree"
+
+  if tree_is_active then
     nvim_tree_api.tree.toggle({ find_file = true, focus = true, update_root = true })
   else
     nvim_tree_api.tree.focus()
   end
 end
 
-nnoremap("<leader>E", "<cmd>NvimTreeToggle<CR>", "Explorer")
-nnoremap("<leader>e", nvimTreeFocusOrToggle, "Explorer show Current file")
+nnoremap("<leader>E", function() nvimTreeFocusOrToggle(true) end, "Explorer float")
+nnoremap("<leader>e", function() nvimTreeFocusOrToggle(false) end, "Explorer show Current file")
 
 if float_preview_ok then
   float_preview.setup({
@@ -122,6 +135,7 @@ nvim_tree.setup({
     full_name = true,
     highlight_git = true,
     root_folder_modifier = ":~",
+    highlight_opened_files = "all", -- can be `"none"`, `"icon"`, `"name"` or `"all"`
   },
   diagnostics = {
     enable = true,
@@ -147,6 +161,13 @@ nvim_tree.setup({
     side = "left",
     number = false,
     relativenumber = false,
+    float = {
+      quit_on_focus_loss = true,
+      open_win_config = {
+        relative = "editor",
+        -- relative = "cursor",
+      }
+    }
   },
   actions = {
     open_file = {
