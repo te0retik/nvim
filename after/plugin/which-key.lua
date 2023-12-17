@@ -8,7 +8,7 @@ wk.setup()
 --
 wk.register({
   g = {
-    name = "+Git",
+    name = "+ Git",
     --    y = { "Yank URL" },
     --    s = { "Stage Hunk" },
     --    r = { "Reset Hunk" },
@@ -19,11 +19,14 @@ wk.register({
   -- c = {
   -- "Code Action"
   -- },
+  d = {
+    "+  Debug"
+  },
   t = {
-    "+Tools"
+    "+ Tools"
   },
   g = {
-    "+Git"
+    "+  Git"
     --    y = { "Yank URL" },
     --    g = { "Stage Hunk" },
     --    r = { "Reset Hunk" },
@@ -36,17 +39,17 @@ wk.register({
     --    R = { "Reset Buffer" },
   },
   l = {
-    name = "+LSP",
-    t = "+Diagnostic"
+    name = "+ LSP",
+    t = "+ Diagnostic"
   },
-  b = {
-    "Buffer"
-  },
+  -- b = {
+  --   "󰕸 Buffer"
+  -- },
   f = {
-    "+Find"
+    "+ Find"
   },
   ["."] = {
-    "+Settings"
+    "+ Settings"
   },
   --  D = { "Databases" },
 }, { mode = "n", prefix = "<leader>" })

@@ -71,4 +71,4 @@ todo.setup({
   },
 })
 
-vim.api.nvim_set_keymap("n", "<leader>ft", "<cmd>TodoTelescope<CR>", { desc='TODOs', noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>ft", "<cmd>TodoTelescope<CR>", { desc=" TODOs", noremap = true, silent = true })

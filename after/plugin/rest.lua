@@ -26,7 +26,7 @@ local print_env_filename_and_preview = function()
   )
 end
 
-vim.keymap.set("n", "<leader>tt", function() rest.run() end, { desc = "Execute request" })
+vim.keymap.set("n", "<leader>tt", function() rest.run() end, { desc = "󰖟 Execute request" })
 vim.keymap.set("n", "<leader>tp", print_env_filename_and_preview, { desc = "Preview request" })
 
 local rest_curl = require("rest-nvim.curl")

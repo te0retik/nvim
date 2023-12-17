@@ -12,7 +12,7 @@ if neodev_ok then
   -- NOTE must setup before LSP 
   neodev.setup({}) -- Setup neovim lua configuration
 else
-  require('user.utils').info("skipped neodev")
+  require("user.utils").info("skipped neodev")
 end
 
 local hover_border_style = "rounded" -- or "single"
@@ -23,24 +23,24 @@ local function setup_keymap()
   nmap("<leader>.l", function() require "lspconfig.ui.lspinfo" () end, "LSPInfo")
   nmap("<leader>.m", "<cmd>Mason<cr>", "Mason")
 
-  nmap("K", vim.lsp.buf.hover, "Hover Documentation") -- See `:help K` for why this keymap
-  nmap("<C-k>", vim.lsp.buf.signature_help, "Signature Documentation")
-  map('i', "<C-k>", vim.lsp.buf.signature_help, "Signature Documentation")
-  nmap("<leader>a", vim.lsp.buf.code_action, "Code Action")
-  nmap("<leader>lr", vim.lsp.buf.rename, "Rename")
+  nmap("K", vim.lsp.buf.hover, " Hover Documentation") -- See `:help K` for why this keymap
+  nmap("<C-k>", vim.lsp.buf.signature_help, "󰊕 Signature Documentation")
+  map('i', "<C-k>", vim.lsp.buf.signature_help, "󰊕 Signature Documentation")
+  nmap("<leader>a", vim.lsp.buf.code_action, " Code Action")
+  nmap("<leader>lr", vim.lsp.buf.rename, "󰑕 Rename")
   nmap("<leader>lf", vim.lsp.buf.format, "Format")
-  nmap("<leader>ll", vim.diagnostic.open_float, "Line diagnostic")
+  nmap("<leader>ll", vim.diagnostic.open_float, " Line diagnostic")
 
   local telescope_ok, telescope = pcall(require, "telescope.builtin")
   if telescope_ok then
-    nmap("gr", telescope.lsp_references, "Goto References")
-    nmap("gi", telescope.lsp_implementations, "Goto Implementation")
-    nmap("gd", telescope.lsp_definitions, "Goto Definition")
-    nmap("gt", telescope.lsp_type_definitions, "Goto Type Definition")
-    nmap("<leader>ls", telescope.lsp_document_symbols, "Find Document Symbols")
-    nmap("<leader>lS", telescope.lsp_dynamic_workspace_symbols, "Find Workspace Symbols")
-    nmap("<leader>ld", function() telescope.diagnostics({ bufnr = 0 }) end, "Document diagnostics")
-    nmap("<leader>lD", telescope.diagnostics, "Workspace Diagnostics")
+    nmap("gr", telescope.lsp_references, " Goto References")
+    nmap("gi", telescope.lsp_implementations, " Goto Implementation")
+    nmap("gd", telescope.lsp_definitions, " Goto Definition")
+    nmap("gt", telescope.lsp_type_definitions, " Goto Type Definition")
+    nmap("<leader>ls", telescope.lsp_document_symbols, "󰫧 Find Document Symbols")
+    nmap("<leader>lS", telescope.lsp_dynamic_workspace_symbols, "󰫧 Find Workspace Symbols")
+    nmap("<leader>ld", function() telescope.diagnostics({ bufnr = 0 }) end, " Document diagnostics")
+    nmap("<leader>lD", telescope.diagnostics, " Workspace Diagnostics")
   else
     require("user.utils").info("skipped lsp telescope bindings")
   end

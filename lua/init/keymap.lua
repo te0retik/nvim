@@ -12,13 +12,13 @@ local nmap = require('user.utils').nnoremap
 -- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
 -------------------------------------------------------------------------------
-nmap("<leader>q", "<cmd>q<cr>", "Quit (q)")
-nmap("<leader>Q", "<cmd>bd<cr>", "Close buffer (:bd)")
-nmap("<leader>w", "<cmd>w<cr>", "Save (:w)")
-nmap("<leader>W", "<cmd>wa<cr>", "Save all (:wa)")
+nmap("<leader>q", "<cmd>q<cr>", "󰅘 Quit (q)")
+nmap("<leader>Q", "<cmd>bd<cr>", " Close buffer (:bd)")
+nmap("<leader>w", "<cmd>w<cr>", " Save (:w)")
+nmap("<leader>W", "<cmd>wa<cr>", " Save all (:wa)")
 nmap("<leader>fc", "<cmd>nohlsearch<cr>", "No highlight search results")
 -- vim.keymap.set("n", "<leader>n", "<cmd>ene!<cr>", {desc="New file"})
-nmap("zo", "za", "Toggle fold under cursor")
+nmap("zo", "za", " Toggle fold under cursor")
 
 -- Split
 -- vim.keymap.set("n", "<leader>v", "<cmd>vsplit<cr>", {desc="Split Vertically"})
@@ -32,10 +32,10 @@ nmap("zo", "za", "Toggle fold under cursor")
 -- nmap("<M-Up>", "<cmd>resize +1<cr>", "Vertical Resize +1")
 -- nmap("<M-Down>", "<cmd>resize -1<cr>", "Vertical Resize -1")
 -- TODO keymap tab movement
-nmap("<M-l>", "<cmd>vertical resize +1<cr>", "Horizontally Resize +1")
-nmap("<M-h>", "<cmd>vertical resize -1<cr>", "Horizontally Resize -1")
-nmap("<M-k>", "<cmd>resize +1<cr>", "Vertical Resize +1")
-nmap("<M-j>", "<cmd>resize -1<cr>", "Vertical Resize -1")
+nmap("<M-l>", "<cmd>vertical resize +1<cr>", "󰡎 Horizontally Resize +1")
+nmap("<M-h>", "<cmd>vertical resize -1<cr>", "󰡌 Horizontally Resize -1")
+nmap("<M-k>", "<cmd>resize +1<cr>", "󰡏 Vertical Resize +1")
+nmap("<M-j>", "<cmd>resize -1<cr>", "󰡍 Vertical Resize -1")
 
 -- Better window movement
 -- vim.keymap.set("n", "<C-h>", "<C-w>h")

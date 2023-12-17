@@ -109,8 +109,8 @@ local function nvimTreeFocusOrToggle(float) -- https://github.com/nvim-tree/nvim
   end
 end
 
-nnoremap("<leader>E", function() nvimTreeFocusOrToggle(true) end, "Explorer float")
-nnoremap("<leader>e", function() nvimTreeFocusOrToggle(false) end, "Explorer show Current file")
+nnoremap("<leader>E", function() nvimTreeFocusOrToggle(true) end, "󰙅 Explorer float")
+nnoremap("<leader>e", function() nvimTreeFocusOrToggle(false) end, "󰙅 Explorer show Current file")
 
 if float_preview_ok then
   float_preview.setup({

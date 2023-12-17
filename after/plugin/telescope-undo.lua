@@ -39,4 +39,4 @@ telescope.setup({
 
 telescope.load_extension("undo")
 
-vim.keymap.set("n", "<leader>u", "<cmd>Telescope undo<cr>", { desc = "Undo history" })
+vim.keymap.set("n", "<leader>u", "<cmd>Telescope undo<cr>", { desc = " Undo history" })
