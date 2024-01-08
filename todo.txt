@@ -21,10 +21,11 @@
 * v leader-w   - save buffer (:w)
 * ? keymap to movement in I-mode
 *   telescope preview scrolling
-*   telescope clonse buffer https://www.reddit.com/r/neovim/comments/qspemc/close_buffers_with_telescope/
+*   telescope close buffer https://www.reddit.com/r/neovim/comments/qspemc/close_buffers_with_telescope/
 *   telescope close buffer from buffers picker
 * v capslock as ESC
 * v nvim-tree - easy expand node key
 * v LSP - preview (popup) type definition, write access, declaration
 * v <leader>lt - diagnostics (troubles) toggling signs, virtual text and other
 * v complete snippets key
+*   tree-view float close after open file or focus lost

@@ -1,6 +1,6 @@
 local lspconfig_ok, lspconfig = pcall(require, "lspconfig")
 if not lspconfig_ok then
-  require('user.utils').info('skipped lsp complex configiguration')
+  require("user.utils").info("skipped lsp complex configiguration")
   return
 end
 
@@ -20,10 +20,16 @@ vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { 
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = hover_border_style })
 
 local function setup_keymap()
+  -- local hover_ok, hover_lib = pcall(require, "hover")
+  -- if hover_ok then
+  --   buf_hover = hover_lib.hover
+  --   nmap("gK", hover_lib.hover_select, "hover.nvim (select)")
+  -- end
   nmap("<leader>.l", function() require "lspconfig.ui.lspinfo" () end, "LSPInfo")
   nmap("<leader>.m", "<cmd>Mason<cr>", "Mason")
 
   nmap("K", vim.lsp.buf.hover, " Hover Documentation") -- See `:help K` for why this keymap
+
   nmap("<C-k>", vim.lsp.buf.signature_help, "󰊕 Signature Documentation")
   map('i', "<C-k>", vim.lsp.buf.signature_help, "󰊕 Signature Documentation")
   nmap("<leader>a", vim.lsp.buf.code_action, " Code Action")
@@ -37,6 +43,8 @@ local function setup_keymap()
     nmap("gi", telescope.lsp_implementations, " Goto Implementation")
     nmap("gd", telescope.lsp_definitions, " Goto Definition")
     nmap("gt", telescope.lsp_type_definitions, " Goto Type Definition")
+    nmap("<leader>li", telescope.lsp_implementations, " Goto Implementation")
+    nmap("<leader>lt", telescope.lsp_type_definitions, " Goto Type Definition")
     nmap("<leader>ls", telescope.lsp_document_symbols, "󰫧 Find Document Symbols")
     nmap("<leader>lS", telescope.lsp_dynamic_workspace_symbols, "󰫧 Find Workspace Symbols")
     nmap("<leader>ld", function() telescope.diagnostics({ bufnr = 0 }) end, " Document diagnostics")
@@ -45,21 +53,10 @@ local function setup_keymap()
     require("user.utils").info("skipped lsp telescope bindings")
   end
 
-  -- local trouble_ok, trouble = pcall(require, "trouble")
-  -- local trouble_ok = false -- disable trouble bindings
-  -- if trouble_ok then
-  --   -- map('<leader>lt', function () trouble.open("document_diagnostics") end, 'Diagnostics')
-  --   map('gR', function() trouble.open("lsp_references") end, 'References')
-  --   map('gI', function() trouble.open("lsp_implementations") end, "Implementations")
-  --   map('gD', function() trouble.open("lsp_definitions") end, 'Definitions')
-  --   map('gT', function() trouble.open("lsp_type_definitions") end, 'Definitions')
-  -- else
-  --   require('user.utils').info('skipped lsp trouble bindings')
-  -- end
+  nmap('gc', vim.lsp.buf.declaration, 'Goto Declaration')
 
   -- map("[d", '<cmd>lua vim.diagnostic.goto_prev({ border = "rounded" })<CR>', opts)
   -- map('gf', vim.lsp.buf.definition, 'Goto Definition')
-  -- map('gc', vim.lsp.buf.declaration, 'Goto Declaration')
   -- map('gE', vim.lsp.buf.lsp_type_definition, 'Goto Type definition')
   -- map('<leader>ly', vim.lsp.buf.workspace_symbol, 'Symbol')
   -- map('<leader>wa', vim.lsp.buf.add_workspace_folder, 'Workspace Add Folder')
@@ -123,6 +120,7 @@ local function setup_lsp()
   local mason_lspconfig = require("mason-lspconfig") -- Ensure the servers above are installed
   mason_lspconfig.setup()
 
+  -- native LSP
   local servers = {
     -- clangd = {},
     -- rust_analyzer= {},
@@ -150,14 +148,64 @@ local function setup_lsp()
   })
   mason_lspconfig.setup_handlers({
     function(server_name)
-      lspconfig[server_name].setup {
+      lspconfig[server_name].setup({
         capabilities = capabilities,
         on_attach = on_attach,
         settings = servers[server_name],
         filetypes = (servers[server_name] or {}).filetypes,
-      }
+      })
     end,
   })
+
+  -- docker remote LSP's
+  local lspcontainers_ok, lspcontainers = pcall(require, "lspcontainers")
+  if lspcontainers_ok then
+    local _root_dir = require("lspconfig/util").root_pattern(".git", vim.fn.getcwd())
+    local _set_nil_pid = function(params)
+      params.processId = vim.NIL
+    end
+    lspconfig.tsserver.setup({
+      capabilities = capabilities,
+      on_attach = on_attach,
+      -- filetypes = { "js", "ts" },
+      before_init = _set_nil_pid,
+      root_dir = _root_dir,
+      cmd = lspcontainers.command("tsserver", {
+        cmd_builder = function(runtime, workdir, image, network)
+          -- local volume = workdir .. ":" .. workdir .. ":z"
+          -- if runtime == "docker" then
+          --   network = "bridge"
+          -- elseif runtime == "podman" then
+          --   network = "slirp4netns"
+          -- end
+
+          return {
+            runtime,
+            "container",
+            "run",
+            "--name=nvim-lsp-tsserver",
+            "--platform=linux/x86_64", -- NOTE: for apple CPU only
+            "--interactive",
+            "--rm",
+            "--network=" .. network,
+            "--workdir=" .. workdir,
+            -- "--volume=" .. volume,
+            image
+          }
+        end
+      }),
+    })
+    lspconfig.pyright.setup({
+      capabilities = capabilities,
+      on_attach = on_attach,
+      -- filetypes = { "py" },
+      before_init = _set_nil_pid,
+      root_dir = _root_dir,
+      cmd = lspcontainers.command("pyright"),
+    })
+  else
+    require("user.utils").info("skipped lsp docker remote configiguration")
+  end
 end
 
 setup_keymap()

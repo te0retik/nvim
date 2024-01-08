@@ -11,7 +11,7 @@ return {
   { "rafi/awesome-vim-colorschemes", lazy = true,  priority = 1000 }, -- collection
 
   { "bluz71/vim-moonfly-colors",     lazy = true,  priority = 1000, name = "moonfly" },
-  { "rose-pine/neovim",              lazy = true,  priority = 1000, name = "rose-pine" }, -- Arekkusuva theme
+  { "rose-pine/neovim",              lazy = true,  priority = 1000, name = "rose-pine" },
   { "nordtheme/vim",                 lazy = true,  priority = 1000, name = "nord" },
   { "catppuccin/nvim",               lazy = true,  priority = 1000, name = "catppuccin" },
   { "bluz71/vim-nightfly-colors",    lazy = true,  priority = 1000, name = "nightfly" },

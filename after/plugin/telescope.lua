@@ -82,6 +82,8 @@ nmap("<leader>fo", t.oldfiles, "Recently Opened Files")
 nmap("<leader>fC", t.commands, " commands")
 nmap("<leader>fL", t.highlights, "highlights")
 nmap("<leader>.c", colorscheme_fuzzy_find, " Colorscheme with preview")
+-- TODO income/outgoing calls
+-- FIXME document symbols select kind
 
 local map = require('user.utils').noremap
 map("i", "<C-r>", t.registers, 'registers')
