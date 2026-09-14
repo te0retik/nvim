@@ -105,17 +105,29 @@ require("scrollbar.handlers.search").setup({
       indicator = ""
     end
     local lnum = posList[idx][1]
-    local text, chunks
-    if nearest then
-      local cnt = #posList
-      text = indicator == "" and ("[%d/%d]"):format(idx, cnt)
-        or ("[%s %d/%d]"):format(indicator, idx, cnt)
-      chunks = { { text, "HlSearchLensNear" } }
-    else
-      text = ("[%s %d]"):format(indicator, idx)
-      chunks = { { text, "HlSearchLens" } }
+    -- Fixed-width layout so every character keeps its column while jumping
+    -- between matches: [<ind:3><idx:cw>/<cnt:cw>]. Padding must go by display
+    -- width (▲/▼ are multi-byte, so %3s would misalign), hence pad_left.
+    local function pad_left(s, w)
+      local d = w - vim.fn.strdisplaywidth(s)
+      return (d > 0 and (" "):rep(d) or "") .. s
     end
-    local lens_col = math.max(vim.api.nvim_win_get_width(0) - 18, 20)
+    local cnt = #posList
+    local cw = #tostring(cnt) -- digits in the total count
+    -- shared prefix "[ind idx" is fixed-width for every lens; only the nearest
+    -- one appends its "/total" tail (no empty placeholder on the others)
+    local text = ("[%s %s%s]"):format(
+      pad_left(indicator, 3),
+      pad_left(tostring(idx), cw),
+      nearest and ("/" .. cnt) or ""
+    )
+    local chunks = { { text, nearest and "HlSearchLensNear" or "HlSearchLens" } }
+    -- shift left of the minimap float when it's shown (20 cols + 1 margin,
+    -- see vim.g.neominimap in init/plugins/tools.lua), else it covers the lens
+    local map_pad = 0
+    local mm_ok, mm = pcall(require, "neominimap.api")
+    if mm_ok and mm.enabled() then map_pad = 21 end
+    local lens_col = math.max(vim.api.nvim_win_get_width(0) - 18 - map_pad, 20)
     render:setVirtText(0, lnum - 1, chunks, { virt_text_win_col = lens_col })
   end,
 })
@@ -233,6 +245,46 @@ vim.keymap.set("n", "<leader>.f", toggling(function()
   hlslens.toggle()
   vim.notify("hlslens: " .. (hlslens.isEnabled() and "on" or "off"))
 end), { desc = "Toggle hlslens markers" })
+
+-- ── Per-window bar for duplicated buffers ────────────────────────────────────
+-- The bar is drawn with buffer-local extmarks, so two windows showing the SAME
+-- buffer both mirror the bar of whichever window rendered last (scrolling in
+-- one appears to "move" the other's bar too). Scope the plugin's namespace to
+-- each buffer's owner window — the window its bar was last computed for.
+-- nvim__ns_set is a private API (documented but experimental); everything is
+-- pcall-guarded so an API change just degrades back to the stock behaviour.
+if vim.api.nvim__ns_set ~= nil then
+  local prefix_ok, const = pcall(require, "scrollbar.const")
+  local sb_ns = vim.api.nvim_create_namespace(prefix_ok and const.NAME_PREFIX or "Scrollbar")
+  local owners = {} -- bufnr -> winid the bar was last rendered for
+
+  local function rescope()
+    local cur = vim.api.nvim_get_current_win()
+    owners[vim.api.nvim_win_get_buf(cur)] = cur
+    local wins = {}
+    for _, w in ipairs(vim.api.nvim_list_wins()) do
+      local b = vim.api.nvim_win_get_buf(w)
+      local owner = owners[b]
+      -- stale owner (window closed or showing another buffer): adopt this one
+      if not owner or not vim.api.nvim_win_is_valid(owner)
+          or vim.api.nvim_win_get_buf(owner) ~= b then
+        owners[b] = w
+        owner = w
+      end
+      if owner == w then wins[#wins + 1] = w end
+    end
+    pcall(vim.api.nvim__ns_set, sb_ns, { wins = wins })
+  end
+
+  vim.api.nvim_create_autocmd(
+    { "WinEnter", "BufWinEnter", "WinClosed", "CursorMoved", "WinScrolled" },
+    {
+      group = vim.api.nvim_create_augroup("user_scrollbar_winscope", { clear = true }),
+      callback = rescope,
+    }
+  )
+  rescope()
+end
 
 -- Bring back whatever bar/map combination was active last time.
 restore_view_state()

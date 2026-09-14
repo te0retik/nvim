@@ -38,6 +38,9 @@ return {
         -- covering the column where nvim-scrollbar draws; leave that column free
         -- so bar + map can be shown together (<leader>.v "both" mode)
         float = { margin = { right = 1 } },
+        -- paint lines with search matches (same source as hlslens: @/ register
+        -- + v:hlsearch, so the map mirrors the hlslens markers); off by default
+        search = { enabled = true },
         handlers = {
           { -- staged hunks: the built-in git handler only shows worktree hunks
             name = "Staged Git Signs",

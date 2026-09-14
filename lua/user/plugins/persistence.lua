@@ -22,6 +22,55 @@ persistence.setup({
   end,
 })
 
+-- ── Persist the last search (/ register + hlsearch state) with the session ──
+-- :mksession can't carry registers and our sessionoptions has no "globals", so
+-- the pattern goes into a sidecar file next to the session file (per cwd).
+-- Saved on VimLeavePre (covers :qa, <leader>Sq and :Restart alike); restored on
+-- persistence's LoadPost event (covers <leader>Sr/Sl, dashboard and :Restart).
+local function search_file()
+  local ok, cur = pcall(persistence.current)
+  if not ok or not cur or cur == "" then return nil end
+  return cur .. ".search"
+end
+
+local search_grp = vim.api.nvim_create_augroup("user_session_search", { clear = true })
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  group = search_grp,
+  desc = "Save search state next to the session file",
+  callback = function()
+    local f = search_file()
+    if not f then return end
+    local fd = io.open(f, "w")
+    if not fd then return end
+    fd:write((vim.v.hlsearch == 1 and "1" or "0") .. "\n" .. vim.fn.getreg("/") .. "\n")
+    fd:close()
+  end,
+})
+
+vim.api.nvim_create_autocmd("User", {
+  pattern = "PersistenceLoadPost",
+  group = search_grp,
+  desc = "Restore search state saved with the session",
+  callback = function()
+    local f = search_file()
+    if not f then return end
+    local fd = io.open(f, "r")
+    if not fd then return end
+    local hls, pat = fd:read("*l"), fd:read("*l")
+    fd:close()
+    if not pat or pat == "" then return end
+    vim.fn.setreg("/", pat)
+    vim.fn.histadd("search", pat) -- reachable via / <Up> as if typed
+    if hls == "1" then
+      vim.o.hlsearch = true
+      -- hlslens renders lenses only on start(); schedule so the session's
+      -- windows are in place first
+      vim.schedule(function() pcall(function() require("hlslens").start() end) end)
+    end
+  end,
+})
+
 -- Keymaps (in addition to the "Restore Session" button on the dashboard).
 -- <leader>S = Session (see which-key.lua). <leader>q/<leader>s are already taken.
 nnoremap("<leader>Sr", function() persistence.load() end, "󰆓 Restore session (cwd)")

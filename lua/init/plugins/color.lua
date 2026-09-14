@@ -19,6 +19,16 @@ return {
     config = function() require("user.plugins.colorscheme") end,
   },
 
+  { -- color picker (ten sliders at once: RGB+HSL+CMYK) + color highlighter.
+    -- Config in user/plugins/ccc.lua. The file events are for the highlighter
+    -- (auto_enable paints #hex / LSP documentColor values in opened buffers);
+    -- <leader>.C (CursorLine color, colorscheme.lua) loads it via :CccPick.
+    "uga-rosa/ccc.nvim",
+    cmd = { "CccPick", "CccConvert", "CccHighlighterToggle" },
+    event = { "BufReadPost", "BufNewFile" },
+    config = function() require("user.plugins.ccc") end,
+  },
+
   -- { "rainglow/vim",                  priority = 1000 }, -- only for GVim
   -- https://github.com/altercation/vim-colors-solarized
   -- https://github.com/tomasr/molokai

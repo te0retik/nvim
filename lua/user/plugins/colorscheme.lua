@@ -238,6 +238,86 @@ local function fix_cursor()
   vim.api.nvim_set_hl(0, "lCursor", { bg = block, fg = glyph })
 end
 
+-- Subtle current-line highlight for every theme ('cursorlineopt' includes
+-- "line", see init.lua). Theme CursorLine backgrounds are often loud; instead
+-- derive our own: Normal bg nudged 7% toward Normal fg — just enough to track
+-- the cursor without shouting, on light and dark schemes alike.
+local function blend(a, b, t) -- 0xRRGGBB ints, t in [0,1]
+  local function mix(shift)
+    local ca = math.floor(a / shift) % 256
+    local cb = math.floor(b / shift) % 256
+    return math.floor(ca + (cb - ca) * t + 0.5) * shift
+  end
+  return mix(65536) + mix(256) + mix(1)
+end
+
+local cursorline_bg_file = vim.fn.stdpath("state") .. "/cursorline_bg"
+
+local function fix_cursorline()
+  -- a hand-picked color (<leader>.C below) wins over the derived blend
+  local fd = io.open(cursorline_bg_file, "r")
+  if fd then
+    local hex = (fd:read("*l") or ""):gsub("%s+", "")
+    fd:close()
+    if hex:match("^#%x%x%x%x%x%x$") then
+      vim.api.nvim_set_hl(0, "CursorLine", { bg = hex })
+      return
+    end
+  end
+  local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+  local dark = vim.o.background == "dark"
+  local bg = normal.bg or (dark and 0x1a1b26 or 0xe1e2e7)
+  local fg = normal.fg or (dark and 0xc8d3f5 or 0x343b58)
+  vim.api.nvim_set_hl(0, "CursorLine", { bg = blend(bg, fg, 0.06) })
+end
+
+-- Pick the CursorLine background with ccc.nvim (custom input shows RGB+HSL+CMYK
+-- sliders all at once — see user/plugins/ccc.lua). ccc edits color text in a
+-- buffer, so a one-line scratch float holds the current hex; confirming the
+-- pick (<CR> in ccc) rewrites that line, which applies + persists the color
+-- and closes the float. q/<Esc> in the float cancels.
+-- :CursorLineColorReset returns to the automatic blend.
+vim.keymap.set("n", "<leader>.C", function()
+  if vim.fn.exists(":CccPick") ~= 2 then
+    vim.notify("ccc.nvim is not available", vim.log.levels.WARN)
+    return
+  end
+  local cur = vim.api.nvim_get_hl(0, { name = "CursorLine", link = false }).bg
+  local hex = cur and string.format("#%06x", cur) or "#888888"
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, { hex })
+  vim.bo[buf].bufhidden = "wipe"
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "cursor", row = 1, col = 0, width = #hex + 2, height = 1,
+    border = "rounded", title = " CursorLine bg ", style = "minimal",
+  })
+  vim.api.nvim_win_set_cursor(win, { 1, 1 })
+  local function close()
+    if vim.api.nvim_win_is_valid(win) then vim.api.nvim_win_close(win, true) end
+  end
+  vim.keymap.set("n", "q", close, { buffer = buf })
+  vim.keymap.set("n", "<Esc>", close, { buffer = buf })
+  vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+    buffer = buf,
+    callback = function()
+      local line = (vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] or ""):gsub("%s+", "")
+      if line:match("^#%x%x%x%x%x%x$") and line ~= hex then
+        local fd = io.open(cursorline_bg_file, "w")
+        if fd then fd:write(line .. "\n"); fd:close() end
+        fix_cursorline()
+        vim.schedule(close)
+      end
+    end,
+  })
+  vim.schedule(function() vim.cmd("CccPick") end)
+end, { desc = "CursorLine color (ccc sliders)" })
+
+vim.api.nvim_create_user_command("CursorLineColorReset", function()
+  os.remove(cursorline_bg_file)
+  fix_cursorline()
+  vim.notify("CursorLine: auto blend")
+end, { desc = "drop the hand-picked CursorLine color" })
+
 -- Bind the cursor shapes to the `Cursor`/`lCursor` highlight groups. Neovim only
 -- emits the terminal cursor-colour escape (OSC 12) for a mode when its guicursor
 -- entry names a highlight group; the default block entry (`n-v-c-sm:block`) names
@@ -254,6 +334,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function()
     if vim.o.background == "light" then override() end
     fix_cursor()
+    fix_cursorline() -- after override(), so the subtle bg wins over the dump's
     save_colorscheme()
   end,
 })

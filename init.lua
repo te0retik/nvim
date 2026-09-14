@@ -72,7 +72,7 @@ vim.opt.titlestring = "%<%F%=%l/%L"
 vim.opt.shiftwidth = 4                     -- the number of spaces inserted for each indentation
 vim.opt.tabstop = 4                        -- insert 4 spaces for a tab
 vim.opt.cursorline = true                  -- enable so CursorLineNr styles the current line number
-vim.opt.cursorlineopt = "number"           -- highlight ONLY the number, not the whole line background
+vim.opt.cursorlineopt = "number,line"      -- number + a subtle line bg (see fix_cursorline in colorscheme.lua)
 vim.opt.number = true                      -- show line numbers
 vim.opt.numberwidth = 2
 vim.opt.relativenumber = true              -- use relative line numbers

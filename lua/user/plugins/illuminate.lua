@@ -22,9 +22,19 @@ illuminate.configure({
 -- and the native LSP document-highlight consistent from one place. Read/write is
 -- only distinguished by the LSP provider; the treesitter/regex fallback paints
 -- every occurrence with IlluminatedWordText (the neutral group).
-vim.api.nvim_set_hl(0, "IlluminatedWordText",  { link = "LspReferenceText" })
-vim.api.nvim_set_hl(0, "IlluminatedWordRead",  { link = "LspReferenceRead" })
-vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { link = "LspReferenceWrite" })
+-- Re-applied on every ColorScheme: :colorscheme runs `hi clear`, which wipes
+-- these links — themes with illuminate support redefine them, bare ones don't,
+-- and the highlight silently disappears after a theme switch.
+local function link_illuminate()
+  vim.api.nvim_set_hl(0, "IlluminatedWordText",  { link = "LspReferenceText" })
+  vim.api.nvim_set_hl(0, "IlluminatedWordRead",  { link = "LspReferenceRead" })
+  vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { link = "LspReferenceWrite" })
+end
+link_illuminate()
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = vim.api.nvim_create_augroup("user_illuminate_hl", { clear = true }),
+  callback = link_illuminate,
+})
 
 -- Navigation between references (parity with the previous mappings).
 local function map(key, dir)
