@@ -1,59 +1,46 @@
 return {
-  -- ray-x/lsp_signature.nvim
-  -- {
-  --  "VonHeikemen/lsp-zero.nvim",
-  --  branch = "v2.x",
-  --  dependencies = {
-  --    -- LSP Support
-  --    "neovim/nvim-lspconfig",             -- Required
-  --    "williamboman/mason.nvim",           -- Optional
-  --    "williamboman/mason-lspconfig.nvim", -- Optional
-  --
-  --    -- Autocompletion
-  --    "hrsh7th/nvim-cmp",             -- Required
-  --    "hrsh7th/cmp-nvim-lsp",         -- Required
-  --    "L3MON4D3/LuaSnip",             -- Required
-  --    "rafamadriz/friendly-snippets", -- Optional LuaSnip dependency
-  --    "saadparwaiz1/cmp_luasnip",     -- Optional LuaSnip source
-  --  }
-  --},
-  { "RRethy/vim-illuminate" }, -- highlight word under cursor
-  {
-    "linrongbin16/lsp-progress.nvim",
-    dependencies = "nvim-tree/nvim-web-devicons",
-  },
-  -- "hrsh7th/cmp-cmdline",
-  -- "hrsh7th/cmp-buffer",
-  { -- Autocompletion
-    "hrsh7th/nvim-cmp",
+  { -- Autocompletion (blink.cmp — Rust-based, replaces nvim-cmp + all cmp-* sources)
+    "saghen/blink.cmp",
+    version = "*",
     dependencies = {
-      "onsails/lspkind.nvim",
-      -- Snippet Engine & its associated nvim-cmp source
-      "L3MON4D3/LuaSnip",
-
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-cmdline",
-      "ray-x/cmp-treesitter",
-      "saadparwaiz1/cmp_luasnip",
-      "rafamadriz/friendly-snippets",
+      {
+        "L3MON4D3/LuaSnip",
+        dependencies = "rafamadriz/friendly-snippets",
+        config = function() require("luasnip.loaders.from_vscode").lazy_load() end,
+      },
     },
+    config = function() require("user.plugins.blink-cmp") end,
   },
+
   { -- LSP Configuration & Plugins
     "neovim/nvim-lspconfig",
     dependencies = {
-      -- Automatically install LSPs to stdpath for neovim
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-
-      -- Useful status updates for LSP
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { "j-hui/fidget.nvim", tag = 'legacy', opts = {} },
-
-      -- Additional lua configuration, makes nvim stuff amazing!
-      "folke/neodev.nvim",
-      "lspcontainers/lspcontainers.nvim",
+      "mason-org/mason.nvim",
+      "mason-org/mason-lspconfig.nvim",
+      "folke/lazydev.nvim",
     },
+    config = function() require("user.plugins.lspconfig") end,
+  },
+
+  { -- Highlight the symbol under the cursor: lsp -> treesitter -> regex fallback
+    "RRethy/vim-illuminate",
+    event = { "BufReadPost", "BufNewFile" },
+    config = function() require("user.plugins.illuminate") end,
+  },
+
+  { -- Call hierarchy as an expandable tree (incoming/outgoing calls), with jump.
+    "ldelossa/litee-calltree.nvim",
+    dependencies = { "ldelossa/litee.nvim" },
+    -- Load early in a normal context: setup() overrides the LSP callHierarchy
+    -- handlers and must run before <leader>lc fires. Loading lazily on the
+    -- keypress runs setup() under textlock, which crashes litee's help-buffer
+    -- creation (E565) and leaves on_open unset (tree opens as a split, not a popup).
+    event = "VeryLazy",
+    keys = {
+      -- Smart incoming calls (resolves the enclosing function if the cursor is
+      -- not on its name); press `S` in the popout to switch incoming↔outgoing.
+      { "<leader>lc", function() require("user.plugins.litee").incoming_calls() end, desc = " Call hierarchy" },
+    },
+    config = function() require("user.plugins.litee") end,
   },
 }

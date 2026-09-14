@@ -1,26 +1,52 @@
 return {
-  ---------------------------- version control ----------------------
-  -- "tpope/vim-fugitive",
-  -- "tpope/vim-rhubarb",
-
-  {                            -- Adds git related signs to the gutter, as well as utilities for managing changes
-    "lewis6991/gitsigns.nvim", -- See `:help gitsigns.txt`
+  {
+    "lewis6991/gitsigns.nvim",
     event = "VeryLazy",
+    config = function() require("user.plugins.gitsigns") end,
   },
-
   {
     "sindrets/diffview.nvim",
-    event = "VeryLazy",
     cmd = { "DiffviewOpen", "DiffviewFileHistory" },
     lazy = true,
+    -- Keymaps live here (not in user/plugins/diffview.lua): the plugin is
+    -- cmd-lazy, so maps defined in its config would only exist after the first
+    -- :Diffview* call. `keys` registers them (and which-key entries) upfront.
+    keys = {
+      { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Diffview" },
+      { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
+      { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", desc = "Project history" },
+    },
+    config = function() require("user.plugins.diffview") end,
   },
-
-  { "petertriho/cmp-git", requires = "nvim-lua/plenary.nvim" },
-
-  --{
-  --  "ruifm/gitlinker.nvim",
-  --  dependencies = "nvim-lua/plenary.nvim",
-  --  event = "BufRead",
-  --},
-  -------------------------------------------------------------------
+  {
+    "petertriho/cmp-git",
+    dependencies = "nvim-lua/plenary.nvim",
+    ft = { "gitcommit", "octo", "NeogitCommitMessage" },
+  },
+  {
+    "NeogitOrg/neogit",
+    cmd = "Neogit",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "sindrets/diffview.nvim", -- integrated diffs
+    },
+    keys = {
+      { "<leader>gn", "<cmd>Neogit<cr>", desc = "Neogit" },
+    },
+    config = function()
+      require("neogit").setup({
+        integrations = { diffview = true },
+      })
+    end,
+  },
+  {
+    "kdheepak/lazygit.nvim",
+    cmd = { "LazyGit", "LazyGitCurrentFile", "LazyGitFilter", "LazyGitFilterCurrentFile" },
+    dependencies = { "nvim-lua/plenary.nvim" },
+    keys = {
+      { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+      { "<leader>gf", "<cmd>LazyGitCurrentFile<cr>", desc = "LazyGit (file)" },
+      { "<leader>gl", "<cmd>LazyGitFilterCurrentFile<cr>", desc = "LazyGit log (file)" },
+    },
+  },
 }
