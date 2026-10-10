@@ -86,7 +86,8 @@ nvim_tree.setup({
     require("nvim-tree.api").config.mappings.default_on_attach(bufnr)
     local function opts(desc) return { desc = desc, buffer = bufnr, nowait = true } end
     if preview_ok then
-      vim.keymap.set('n', "P", function()
+      -- gp, not P: P stays nvim-tree's default "go to parent directory".
+      vim.keymap.set('n', "gp", function()
         preview_enabled = not preview_enabled
         if preview_enabled then preview.watch() else preview.unwatch() end
       end, opts("Preview (toggle watch)"))
@@ -307,6 +308,13 @@ nvim_tree.setup({
     vim.keymap.set('n', "<leader>yn", api.fs.copy.filename,      opts("󰷊 Copy file name"))
     vim.keymap.set('n', "<leader>yr", api.fs.copy.relative_path, opts("󰷊 Copy relative path"))
     vim.keymap.set('n', "<leader>ya", api.fs.copy.absolute_path, opts("󰷊 Copy absolute path"))
+
+    -- Bookmarks (toggled with nvim-tree's default `m`): ]m / [m jump between them
+    -- like treesitter's ]m / [m jump between functions in code buffers;
+    -- <leader>m picks one from a list (vim.ui.select).
+    vim.keymap.set('n', "]m", api.marks.navigate.next,   opts("Next bookmark"))
+    vim.keymap.set('n', "[m", api.marks.navigate.prev,   opts("Prev bookmark"))
+    vim.keymap.set('n', "<leader>m", api.marks.navigate.select, opts("Select bookmark"))
 
     if telescope_ok then
       vim.keymap.set('n', "<leader>fG", TelescopeRoutines.launch_live_grep, { desc = "Grep in Selected node", buffer = bufnr })
