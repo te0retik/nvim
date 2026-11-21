@@ -22,6 +22,24 @@ persistence.setup({
   end,
 })
 
+-- "localoptions" above bakes window-local option VALUES into the session file,
+-- so a restore resurrects whatever cursorlineopt the windows had when saved —
+-- e.g. plain "number" from before init.lua switched to "number,line", which
+-- silently kills the current-line highlight. Re-stamp the global value onto
+-- every restored (non-floating) window.
+vim.api.nvim_create_autocmd("User", {
+  pattern = "PersistenceLoadPost",
+  group = vim.api.nvim_create_augroup("user_session_winopts", { clear = true }),
+  desc = "Reset cursorlineopt on restored windows to the global value",
+  callback = function()
+    for _, w in ipairs(vim.api.nvim_list_wins()) do
+      if vim.api.nvim_win_get_config(w).relative == "" then
+        vim.wo[w].cursorlineopt = vim.go.cursorlineopt
+      end
+    end
+  end,
+})
+
 -- ── Persist the last search (/ register + hlsearch state) with the session ──
 -- :mksession can't carry registers and our sessionoptions has no "globals", so
 -- the pattern goes into a sidecar file next to the session file (per cwd).

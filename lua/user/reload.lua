@@ -46,6 +46,10 @@ vim.api.nvim_create_user_command("Restart", RestartWithSession,
 vim.api.nvim_create_autocmd("User", {
 	pattern = "VeryLazy", -- plugins are up by then; dashboard yields gracefully
 	group = vim.api.nvim_create_augroup("user_restart_restore", { clear = true }),
+	-- nested: the session's :only/:edit must fire BufWipeout/FileType etc.
+	-- Without it the dashboard never sees its window close (stale WinResized
+	-- handler → "Invalid window id: 1000") and restored buffers get no filetype.
+	nested = true,
 	callback = function()
 		if vim.fn.filereadable(restart_marker) == 1 then
 			os.remove(restart_marker) -- one-shot: a plain launch must not restore

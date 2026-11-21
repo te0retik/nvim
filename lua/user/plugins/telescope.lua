@@ -103,6 +103,27 @@ telescope.setup({
     }
   },
   defaults = {
+    -- Telescope opens <CR> selections in the window the picker was launched
+    -- from. Launched from the nvim-tree window, that would edit *in the tree*,
+    -- which nvim-tree intercepts and re-routes through its window picker — and
+    -- with no other window open nvim-window-picker errors "No windows left to
+    -- pick after filtering". Choose a target ourselves instead: the launch
+    -- window if it's a normal one, else the first normal window, else a fresh
+    -- vertical split right of the tree (same as nvim-tree.lua's
+    -- open_file_smart with 0 editor windows).
+    get_selection_window = function()
+      local wins = vim.api.nvim_tabpage_list_wins(0)
+      table.insert(wins, 1, vim.api.nvim_get_current_win())
+      for _, win in ipairs(wins) do
+        if vim.api.nvim_win_get_config(win).relative == "" then
+          local buf = vim.api.nvim_win_get_buf(win)
+          if vim.bo[buf].filetype ~= "NvimTree" then return win end
+        end
+      end
+      -- Only the tree left: split off it into an empty buffer (never showing
+      -- the tree buffer in the new window, so nvim-tree stays out of the way).
+      return vim.api.nvim_open_win(vim.api.nvim_create_buf(true, false), false, { split = "right" })
+    end,
     mappings = {
       n = {
         ["dd"]    = "delete_buffer",
@@ -200,6 +221,7 @@ local current_buffer_fuzzy_find = function(default_text)
     winblend = 10,
     previewer = true,
     default_text = default_text,
+    prompt_title = "Current Buffer Fuzzy: " .. vim.fn.expand("%:t"),
   })
 end
 

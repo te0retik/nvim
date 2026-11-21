@@ -22,6 +22,14 @@ return {
     config = function() require("user.plugins.lspconfig") end,
   },
 
+  { -- LSP rename edited in place on the symbol itself (floating input over the
+    -- word) with live preview of all substitutions. lazy=true: lazy.nvim loads
+    -- it on the first require() from the <leader>lr mapping in lspconfig.lua.
+    "saecki/live-rename.nvim",
+    lazy = true,
+    opts = {},
+  },
+
   { -- Highlight the symbol under the cursor: lsp -> treesitter -> regex fallback
     "RRethy/vim-illuminate",
     event = { "BufReadPost", "BufNewFile" },

@@ -5,6 +5,26 @@ return {
     config = function() require("user.plugins.kulala") end,
   },
 
+  { -- markdown rendered in-buffer (headings, lists, checkboxes, tables, code
+    -- blocks, links, callouts). Rendering is per *mode*: in normal/command/
+    -- terminal mode the buffer is rendered, in insert/visual mode the text is
+    -- shown raw so editing is unobstructed. <leader>tm toggles rendering
+    -- for the current buffer, <leader>tM globally.
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown" },
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+    opts = {
+      render_modes = { "n", "c", "t" },
+      completions = { blink = { enabled = true } }, -- checkbox / callout completion in blink.cmp
+      heading = { position = "inline" },
+      code = { width = "block", left_pad = 1, right_pad = 1 },
+    },
+    keys = {
+      { "<leader>tm", "<cmd>RenderMarkdown buf_toggle<cr>", ft = "markdown", desc = "󰍔 Markdown render (this buffer)" },
+      { "<leader>tM", "<cmd>RenderMarkdown toggle<cr>",    ft = "markdown", desc = "󰍔 Markdown render (all buffers)" },
+    },
+  },
+
   { -- DB
     "kristijanhusak/vim-dadbod-ui",
     dependencies = "tpope/vim-dadbod",
@@ -31,8 +51,8 @@ return {
       vim.g.neominimap = {
         auto_enable = false, -- enabled by hand: <leader>.M / <leader>.v cycle
         exclude_filetypes = { "NvimTree", "lazy", "TelescopePrompt", "help" },
-        -- init.lua sets cursorlineopt="number" globally, but the map window has
-        -- no number column — without this override its cursor line draws nothing
+        -- init.lua sets cursorlineopt="number,line" globally, but the map window
+        -- has no number column — keep just "line" there
         winopt = function(opt) opt.cursorlineopt = "line" end,
         -- the map floats flush against the window's right edge by default,
         -- covering the column where nvim-scrollbar draws; leave that column free

@@ -1,0 +1,12 @@
+# Python language servers for Neovim, run by lua/user/python_lsp.lua.
+#
+# BASE is the image whose interpreter and site-packages the servers analyse: a project's own
+# dev/test image (so imports resolve exactly as in the container), or plain Python by default.
+#   container build --build-arg BASE=szondi-backend:dev -t nvim-pylsp:szondi-backend-dev containers/python-lsp
+ARG BASE=docker.io/library/python:3.13-slim
+FROM ${BASE}
+USER root
+# basedpyright ships its own Node runtime in the wheel. ruff is kept if the base image already
+# has it, so the project's pinned version formats and lints the code.
+RUN pip install --no-cache-dir basedpyright \
+ && (command -v ruff >/dev/null || pip install --no-cache-dir ruff)
